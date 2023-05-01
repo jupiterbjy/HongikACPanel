@@ -220,7 +220,7 @@ class ACManager:
         # AC states to keep track of
         self.state: None | ACState = None
         self.target_temp = (self.upper_bound + self.lower_bound) // 2
-        self.power_state = False
+        self.is_powered = False
         self.action = "other"
 
     @functools.cached_property
@@ -241,7 +241,7 @@ class ACManager:
 
         payload = {k: v for k, v in self.base_state.items()}
         payload["hdnNo_4"] = self.target_temp
-        payload["hdnNo_1"] = 1 if self.power_state else 0
+        payload["hdnNo_1"] = 1 if self.is_powered else 0
 
         payload["btnSubmit.x"], payload["btnSubmit.y"] = self.btn_action[self.action]
 
@@ -330,7 +330,7 @@ class ACManager:
         """
 
         self.action = "on"
-        self.power_state = True
+        self.is_powered = True
         await self._send()
 
     async def power_off(self):
@@ -341,7 +341,7 @@ class ACManager:
         """
 
         self.action = "off"
-        self.power_state = False
+        self.is_powered = False
         await self._send()
 
     async def set_temp(self, temp: int):
@@ -400,7 +400,7 @@ class ACManager:
         # TODO: Check all possible exceptions from Univ's AC web remote server
 
         logger.info("Sending request!")
-        logger.debug(f"Power {self.power_state} / TGT Temp {self.target_temp}")
+        logger.debug(f"Power {self.is_powered} / TGT Temp {self.target_temp}")
 
         resp = await self.client.post(self._url_remote, data=self.payload, follow_redirects=True)
 
@@ -437,6 +437,7 @@ async def main(arguments):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Controls AC")
     parser.add_argument(
+        "ip",
         type=str,
         help="Web remote IP"
     )
