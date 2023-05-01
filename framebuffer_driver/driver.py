@@ -18,9 +18,12 @@ import trio
 
 __all__ = ["FramebufferDriver"]
 
-# Splash file to show up on framebuffer for testing
 ROOT = pathlib.Path(__file__).parent
-TEST_SPLASH_FILE = ROOT / "splash.png"
+
+# Splash file to show up on framebuffer for testing - merely 26 KiB on memory.
+# Probably a tiny bit intended to keep Hina loaded on memory.
+SPLASH_IMG_PATH = ROOT / "splash.png"
+TEST_SPLASH_FILE = pygame.image.load(SPLASH_IMG_PATH.as_posix())
 
 # Test screen via
 # while true; do sudo cat /dev/urandom > /dev/fb1; sleep .01; done
@@ -45,7 +48,7 @@ class FramebufferDriver:
         self.dim = (screen_x, screen_y)
         self.bit_depth = bit_depth
 
-        self.fb = trio.Path(f"/dev/fb{fb_id}")
+        self.fb: trio.Path = trio.Path(f"/dev/fb{fb_id}")
         # leaving file open is not safe usually, but for framebuffer why not.
 
         print(f"Using {self.fb}")
@@ -70,13 +73,12 @@ class FramebufferDriver:
     def __del__(self):
         """Destructor to make sure pygame shuts down, etc."""
 
-    def test(self):
+    def show_splash(self):
         """Shows splash image"""
 
         # basically
 
-        self.screen.blit(pygame.image.load(TEST_SPLASH_FILE.as_posix()), (0, 0))
-        self.update_sync()
+        self.screen.blit(TEST_SPLASH_FILE, (0, 0))
 
     def blank(self):
         self.screen.fill((0, 0, 0))
@@ -85,6 +87,11 @@ class FramebufferDriver:
 if __name__ == "__main__":
     # Create an instance of the PyScope class, assuming rpi, 480 320
     driver = FramebufferDriver(480, 320, 1)
-    driver.test()
+
+    driver.show_splash()
+    driver.update_sync()
+
     time.sleep(10)
+
     driver.blank()
+    driver.update_sync()
