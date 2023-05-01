@@ -1,0 +1,4 @@
+trio
+pygame
+httpx
+beautifulsoup4
