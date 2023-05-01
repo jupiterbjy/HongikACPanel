@@ -39,6 +39,11 @@ class ACRequestFailed(Exception):
     pass
 
 
+# TODO: find way to determine if we're still logged in or not
+class NotLoggedIn(Exception):
+    pass
+
+
 # TODO: Check if we need target temp here
 class ACState:
     """
