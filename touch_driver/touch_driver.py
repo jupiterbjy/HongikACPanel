@@ -97,7 +97,7 @@ class TouchDriver:
         self._listener.ungrab()
         self.active_device.remove(self.device_name)
 
-    def touch_receiver(self) -> Union[Tuple[int, int], None]:
+    def receive_touch(self) -> Union[Tuple[int, int], None]:
         """Get one touch event.
         Temporary measure until I re-implement evdev to support trio.
         Will only return last touch event.
