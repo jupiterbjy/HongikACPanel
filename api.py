@@ -319,6 +319,9 @@ class ACManager:
             logger.debug(f"Sleeping for {sleep_duration}")
 
             await trio.sleep(sleep_duration)
+
+            await self.login()
+            await trio.sleep(5)
             await self._send()
 
     async def get_temp(self):
