@@ -90,11 +90,11 @@ class TouchDriver:
         self.converter = _raw_coord_to_pixel_closure(self.dim, origin, end)
 
         # start event manager
-        self.listener = evdev.InputDevice("/dev/input/" + touch_device)
-        self.listener.grab()
+        self._listener = evdev.InputDevice("/dev/input/" + touch_device)
+        self._listener.grab()
 
     def __del__(self):
-        self.listener.ungrab()
+        self._listener.ungrab()
         self.active_device.remove(self.device_name)
 
     def touch_receiver(self) -> Union[Tuple[int, int], None]:
@@ -110,12 +110,9 @@ class TouchDriver:
         # EV_ABS = 3 / EV_KEY = 1
         # but for long touch there could be lots of axis flags
 
-        hw_x = 0
-        hw_y = 0
-
         # could make this much simpler with match-case clause..
         try:
-            evs = list(self.listener.read())
+            evs = list(self._listener.read())
 
             abs_xs = [ev for ev in evs if ev.type == EV_ABS and ev.code == ABS_X]
             abs_ys = [ev for ev in evs if ev.type == EV_ABS and ev.code == ABS_Y]
