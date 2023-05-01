@@ -3,3 +3,4 @@ pygame
 httpx
 beautifulsoup4
 loguru
+evdev
