@@ -2,4 +2,12 @@
 UI with some logging settings
 """
 
-from ui import ACApp
+import trio
+from loguru import logger
+
+from ui import main
+
+
+# TODO: add loguru settings
+
+trio.run(main)
