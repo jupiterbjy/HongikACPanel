@@ -29,12 +29,13 @@ TEST_SPLASH_FILE = ROOT / "splash.png"
 
 class FramebufferDriver:
 
-    def __init__(self, screen_x, screen_y, fb_id=0):
+    def __init__(self, screen_x, screen_y, bit_depth=16, fb_id=0):
         """Initializes a new pygame screen using the Frame Buffer.
 
         Args:
             screen_x: Screen X pixels
             screen_y: Screen Y pixels
+            bit_depth: Bits depth of pygame surface. 16 for GPIO LCD, 24 otherwise
             fb_id: Framebuffer ID. Default 0
 
         Raises:
@@ -42,6 +43,8 @@ class FramebufferDriver:
         """
 
         self.dim = (screen_x, screen_y)
+        self.bit_depth = bit_depth
+
         self.fb = trio.Path(f"/dev/fb{fb_id}")
         # leaving file open is not safe usually, but for framebuffer why not.
 
@@ -49,20 +52,20 @@ class FramebufferDriver:
 
         # Safe to call init multiple time anyway!
         pygame.init()
-        self.screen = pygame.Surface(self.dim)
+        self.screen = pygame.Surface(self.dim, depth=bit_depth)
 
     def update_sync(self):
         """Synchronous framebuffer."""
 
         with open(self.fb, "wb") as fp:
             # noinspection PyTypeChecker
-            fp.write(self.screen.convert(16, 0).get_buffer())
+            fp.write(self.screen.get_buffer())
 
     async def update(self):
         """Update framebuffer."""
 
         # there's option to set pygame in 16bit, might need to check that out
-        await self.fb.write_bytes(self.screen.convert(16, 0).get_buffer())
+        await self.fb.write_bytes(self.screen.get_buffer())
 
     def __del__(self):
         """Destructor to make sure pygame shuts down, etc."""
