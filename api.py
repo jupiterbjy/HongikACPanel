@@ -435,8 +435,8 @@ async def main(arguments):
     await ac.set_temp(arguments.temp)
 
     async with trio.open_nursery() as nursery:
-        nursery.start_soon(ac.keep_alive_power())
-        nursery.start_soon(ac.keep_alive_state())
+        nursery.start_soon(ac.keep_alive_power)
+        nursery.start_soon(ac.keep_alive_state)
 
     await ac.power_off()
     logger.info("Shutting down!")
