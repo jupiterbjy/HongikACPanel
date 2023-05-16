@@ -76,8 +76,6 @@ class FramebufferDriver:
     def show_splash(self):
         """Shows splash image"""
 
-        # basically
-
         self.screen.blit(TEST_SPLASH_FILE, (0, 0))
 
     def blank(self):

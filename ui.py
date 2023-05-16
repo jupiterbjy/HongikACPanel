@@ -181,7 +181,7 @@ class ACApp:
         """Updates target temp on screen"""
         tgt_temp = self._ac_manager.target_temp
         rendered = self._font.render(
-            f"{tgt_temp}°C", True, (255, 255, 255), background=(0, 0, 0)
+            f"{tgt_temp}°C", True, (255, 255, 255), (0, 0, 0)
         )
 
         self.screen.blit(rendered, DumbUI.tgt_temp_pos)
@@ -190,7 +190,7 @@ class ACApp:
         """Updates current temp on screen"""
         cur_temp = await self._ac_manager.get_temp()
         rendered = self._font.render(
-            f"{cur_temp}°C", True, (255, 100, 100), background=(0, 0, 0)
+            f"{cur_temp}°C", True, (255, 100, 100), (0, 0, 0)
         )
 
         self.screen.blit(rendered, DumbUI.tgt_temp_pos)
