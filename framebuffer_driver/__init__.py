@@ -6,4 +6,4 @@ Primarily intended for weak devices like 1B+ where even mere x server is too hea
 Uses trio to await for extra stability & safety.
 """
 
-from driver import *
+from .driver import *
