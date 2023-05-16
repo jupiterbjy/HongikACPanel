@@ -363,7 +363,7 @@ class ACManager:
             ACRequestFailed: If request was failed
         """
 
-        if not(self.upper_bound < temp < self.lower_bound):
+        if not(self.lower_bound <= temp < self.upper_bound):
             raise ACTempOutOfBound()
 
         self.target_temp = temp
