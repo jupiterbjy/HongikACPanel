@@ -195,7 +195,7 @@ class ACApp:
 
         self.screen.blit(rendered, DumbUI.tgt_temp_pos)
 
-    async def update_temp_loop(self, interval_sec=60, max_deviation_sec = 10):
+    async def update_temp_loop(self, interval_sec=60, max_deviation_sec=10):
         """Updates temps continuously with interval"""
 
         logger.debug("Temp update started")
@@ -208,11 +208,10 @@ class ACApp:
 
 
 async def main(args):
-
     ac_mgr = ACManager(args.ip, args.id, args.pw)
     task_manager = AsyncTaskManager()
 
-    fb_driver = FramebufferDriver(480, 320)
+    fb_driver = FramebufferDriver(480, 320, fb_id=args.buffer.strip("fb"))
     touch_driver = TouchDriver(SCREEN_TYPE, TOUCH_DEVICE)
 
     app = ACApp(ac_mgr, task_manager, touch_driver, fb_driver)
@@ -236,6 +235,9 @@ if __name__ == "__main__":
     parser.add_argument("ip", type=str, help="Web remote controller IP")
     parser.add_argument("id", type=str, help="Web remote controller id")
     parser.add_argument("pw", type=str, help="Web remote controller password")
+    parser.add_argument(
+        "-b", "--buffer", type=str, default="fb0", help="Web remote controller password"
+    )
     parser.add_argument("-t", "--temp", type=int, default=26, help="Target temperature")
 
     trio.run(main, parser.parse_args())
