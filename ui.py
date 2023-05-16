@@ -117,7 +117,7 @@ class ACApp:
         for _, area in DumbUI.ui_pos:
             area.draw(self.screen)
 
-        self._fb_driver.update()
+        await self._fb_driver.update()
 
     async def graceful_shutdown(self):
         """Attempt graceful shutdown"""
