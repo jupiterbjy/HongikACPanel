@@ -113,7 +113,7 @@ class ACApp:
 
         await self._ac_manager.login()
 
-    def draw_areas(self):
+    async def draw_areas(self):
         for _, area in DumbUI.ui_pos:
             area.draw(self.screen)
 
@@ -205,6 +205,7 @@ class ACApp:
             await self._update_current_temp()
             await self._update_target_temp()
             await self._fb_driver.update()
+            await self.draw_areas()
 
 
 async def main(args):
