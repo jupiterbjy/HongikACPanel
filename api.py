@@ -2,7 +2,7 @@
 Experimental AC control code
 Some a bit of improved code to discard need of Seleinum and chrome/firefox driver
 
-Python 3.10+
+Python 3.9
 2022-09-08 / 2023-03-09
 jupiterbjy@gmail.com
 
@@ -223,7 +223,7 @@ class ACManager:
         self._pw = password
 
         # AC states to keep track of
-        self.state: None | ACState = None
+        self.state: Union[ACState, None] = None
         self.target_temp = (self.upper_bound + self.lower_bound) // 2
         self.is_powered = False
         self.action = "other"
@@ -391,7 +391,7 @@ class ACManager:
             ACRequestFailed: If request was failed
         """
 
-        if (self.target_temp + 1) >= self.upper_bound:
+        if self.target_temp >= self.upper_bound:
             raise ACTempOutOfBound()
 
         self.target_temp += 1
