@@ -11,7 +11,7 @@ import pygame
 __all__ = ["GlobalSetting", "framebuffer_init"]
 
 
-SPLASH_IMG_PATH = pathlib.Path(__file__).parent / "splash.bmp"
+SPLASH_IMG_PATH = pathlib.Path(__file__).parent / "splash.png"
 
 
 class GlobalSetting:

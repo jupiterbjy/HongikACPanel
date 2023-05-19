@@ -28,7 +28,12 @@ class ButtonType(Protocol):
 
 class Box:
     def __init__(
-        self, p1: Tuple[int, int], p2: Tuple[int, int], /, screen: SurfaceType = None
+        self,
+        p1: Tuple[int, int],
+        p2: Tuple[int, int],
+        /,
+        color: Tuple[int, int, int, int] = (255, 255, 255, 255),
+        screen: SurfaceType = None,
     ):
         """Simple class representing area.
 
@@ -45,11 +50,11 @@ class Box:
         # pre-cache
         self.width = self.x2 - self.x1
         self.height = self.y2 - self.y1
-        self.pos_full = (*p1, *p2)
+        self.pos_full = (*p1, p2[0] - p1[0], p2[1] - p1[1])
         # self.rect = Rect(*p1, *p1)
 
         # defaults to white
-        self.color = (255, 255, 255, 255)
+        self.color = color
 
         # bake render method
         self._render = partial(self.screen.fill, self.color, self.pos_full)
@@ -84,15 +89,16 @@ class TextBox(Box):
         p1,
         p2,
         text: str,
-        text_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
         /,
+        color: Tuple[int, int, int, int] = (255, 255, 255, 255),
+        text_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
         font: FontType = None,
         antialias: bool = True,
         screen=None,
     ):
         """Static Text Box Element"""
 
-        super().__init__(p1, p2, screen)
+        super().__init__(p1, p2, color, screen)
 
         self.text = text
         self.text_color = text_color
@@ -104,6 +110,12 @@ class TextBox(Box):
         ), "You must set global font or provide font argument."
 
         self._render_txt: Callable[[], SurfaceType]
+        self._render_txt = partial(
+            self.font.render, self.text, self.aa, self.text_color
+        )
+
+    def set_text(self, text: str):
+        self.text = text
         self._render_txt = partial(
             self.font.render, self.text, self.aa, self.text_color
         )
@@ -124,4 +136,5 @@ class TextBox(Box):
         new_y = ((self.height - rendered.get_height()) // 2) + self.y1
 
         self.screen.blit(self._render_txt(), (new_x, new_y))
+
         return rect

@@ -12,7 +12,7 @@ __all__ = ["GlobalSetting", "ui_framework_init"]
 class GlobalSetting:
     """Settings singleton"""
     surface: SurfaceType | None = None
-    font: FontType | None = None
+    font: FontType = None
 
 
 def ui_framework_init(surface: SurfaceType = None, font: FontType = None):

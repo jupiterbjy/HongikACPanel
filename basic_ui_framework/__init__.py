@@ -4,7 +4,6 @@ Very Basic Pygame GUI Framework for Framebuffer usage in mind
 Almost like non-standard usage lead to reinventing everything.
 """
 
-
 from .primitives import *
 from .combined import *
 from .ui_manager import *
