@@ -1,61 +1,63 @@
 """
-RPi Frame Buffer Driver using pygame.
-
+RPi Frame Buffer wrapper for pygame.
 Primarily intended for weak devices like 1B+ where even mere x server is too heavy.
 
 Uses trio to await for extra stability & safety.
+
+Might need libsdl2-dev installed to install pygame on 1B+ w/ python 3.11.
 
 Following is referenced from:
 https://stackoverflow.com/a/54986161/10909029
 """
 
-import time
-import pathlib
+import subprocess
+from typing import Tuple
 
 import pygame
 import trio
 
+from .global_settings import GlobalSetting
+
 
 __all__ = ["FramebufferDriver"]
+# __all__ = [k for k, v in dir() if not k.startswith("_")]
 
-ROOT = pathlib.Path(__file__).parent
 
-# Splash file to show up on framebuffer for testing - merely 26 KiB on memory.
-# Probably a tiny bit intended to keep Hina loaded on memory.
-SPLASH_IMG_PATH = ROOT / "splash.png"
-TEST_SPLASH_FILE = pygame.image.load(SPLASH_IMG_PATH.as_posix())
+def get_fb_info(fb="/dev/fb0") -> Tuple[int, int, int]:
+    """Gets frame buffer info. Returns (width, height, bit_depth)"""
 
-# Test screen via
-# while true; do sudo cat /dev/urandom > /dev/fb1; sleep .01; done
-# sudo fbi -T 2 -d /dev/fb1 -noverbose -a splash.png
+    cmd = f"fbset -fb {fb} | grep geometry"
+    returned = subprocess.run(cmd, capture_output=True, shell=True)
+    assert returned.returncode == 0, f"Return code from command '{cmd}' was {returned.returncode}"
+
+    # result format is '   geometry 480 320 480 320 16'
+    x, y, _, _, bits = map(int, returned.stdout.decode().strip().split(" ")[1:])
+    return x, y, bits
 
 
 class FramebufferDriver:
-
-    def __init__(self, screen_x, screen_y, bit_depth=16, fb_id=0):
+    def __init__(self, fb: str = None):
         """Initializes a new pygame screen using the Frame Buffer.
 
         Args:
-            screen_x: Screen X pixels
-            screen_y: Screen Y pixels
-            bit_depth: Bits depth of pygame surface. 16 for GPIO LCD, 24 otherwise
-            fb_id: Framebuffer ID. Default 0
+            fb: Framebuffer name. Defaults to /dev/fb0 if None.
 
         Raises:
             NoUsableDriverError: If there's no usable framebuffer drivers
         """
 
-        self.dim = (screen_x, screen_y)
-        self.bit_depth = bit_depth
+        if fb is None:
+            fb = GlobalSetting.fb
 
-        self.fb: trio.Path = trio.Path(f"/dev/fb{fb_id}")
+        self.fb: trio.Path = trio.Path(fb)
+        print("Using", self.fb)
         # leaving file open is not safe usually, but for framebuffer why not.
-
-        print(f"Using {self.fb}")
 
         # Safe to call init multiple time anyway!
         pygame.init()
-        self.screen = pygame.Surface(self.dim, depth=bit_depth)
+
+        self.width, self.height, self.depth = get_fb_info(fb)
+        self.screen = pygame.Surface((self.width, self.height), depth=self.depth)
 
     def update_sync(self):
         """Synchronous framebuffer."""
@@ -76,20 +78,7 @@ class FramebufferDriver:
     def show_splash(self):
         """Shows splash image"""
 
-        self.screen.blit(TEST_SPLASH_FILE, (0, 0))
+        self.screen.blit(GlobalSetting.test_img, (0, 0))
 
     def blank(self):
         self.screen.fill((0, 0, 0))
-
-
-if __name__ == "__main__":
-    # Create an instance of the PyScope class, assuming rpi, 480 320
-    driver = FramebufferDriver(480, 320, 1)
-
-    driver.show_splash()
-    driver.update_sync()
-
-    time.sleep(10)
-
-    driver.blank()
-    driver.update_sync()

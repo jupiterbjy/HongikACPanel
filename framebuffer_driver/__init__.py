@@ -7,3 +7,4 @@ Uses trio to await for extra stability & safety.
 """
 
 from .driver import *
+from .global_settings import framebuffer_init

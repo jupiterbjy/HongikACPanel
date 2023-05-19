@@ -15,6 +15,7 @@ from evdev.ecodes import EV_ABS, EV_KEY, ABS_X, ABS_Y, BTN_TOUCH
 
 LCD_DATA = pathlib.Path(__file__).parent / "lcd_data.json"
 LCD_DATA = json.load(LCD_DATA.open(encoding="utf8"))
+DEFAULT_DEVICE = "event0"
 
 
 def _raw_coord_to_pixel_closure(pixel_dim, hw_origin, hw_end):
@@ -34,8 +35,8 @@ def _raw_coord_to_pixel_closure(pixel_dim, hw_origin, hw_end):
     x_d_abs = abs(x_d)
     y_d_abs = abs(y_d)
 
-    w_divider = x_d_abs * pixel_dim[0]
-    h_divider = y_d_abs * pixel_dim[1]
+    w_divider = x_d_abs / pixel_dim[0]
+    h_divider = y_d_abs / pixel_dim[1]
 
     # could've reduced 2 call overheads if python3.10+ works with pygame on pi...
     if x_d < 0:
@@ -122,7 +123,7 @@ class TouchDriver:
             ]
 
             # make sure there's release event - we'll ignore down event might be missing.
-            if not release_ev:
+            if not all((abs_xs, abs_ys, release_ev)):
                 return None
 
             # if start_pos:
