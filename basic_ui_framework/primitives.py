@@ -72,7 +72,7 @@ class Box:
 
 
 class ButtonMixin:
-    def on_click(self: Box, coordinate: Tuple[int, int]):
+    async def on_click(self: Box, coordinate: Tuple[int, int]):
         """Action upon click. touch coordinate is given as argument."""
 
         pass

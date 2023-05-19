@@ -5,7 +5,6 @@ Manages UI events
 from typing import Tuple, Dict
 
 import trio
-from pygame import SurfaceType
 from loguru import logger
 
 from .primitives import *
@@ -38,7 +37,7 @@ class UIManager:
     def values(self):
         return self.all_uis.values()
 
-    def run_click_event(self, coordinate: Tuple[int, int]) -> bool:
+    async def run_click_event(self, coordinate: Tuple[int, int]) -> bool:
         """Runs clicked element's action. Stops at first match.
 
         Returns True if there was match, otherwise False.
@@ -46,7 +45,8 @@ class UIManager:
 
         for name, ui_element in self.button_type.items():
             if coordinate in ui_element:
-                ui_element.on_click(coordinate)
+                logger.debug("Element {} click at {}", name, coordinate)
+                await ui_element.on_click(coordinate)
                 return True
 
         return False
@@ -68,7 +68,4 @@ class UIManager:
             if touch is None:
                 continue
 
-            for name, element in self.button_type.items():
-                if touch in element:
-                    logger.debug("Element {} click at {}", name, touch)
-                    element.on_click(touch)
+            await self.run_click_event(touch)
