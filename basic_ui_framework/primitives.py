@@ -27,7 +27,9 @@ class ButtonType(Protocol):
 
 
 class Box:
-    def __init__(self, p1: Tuple[int, int], p2: Tuple[int, int], /, screen: SurfaceType = None):
+    def __init__(
+        self, p1: Tuple[int, int], p2: Tuple[int, int], /, screen: SurfaceType = None
+    ):
         """Simple class representing area.
 
         Args:
@@ -76,7 +78,19 @@ class ButtonMixin:
 
 
 class TextBox(Box):
-    def __init__(self, p1, p2, text: str, text_color: Tuple[int, int, int, int] = (0, 0, 0, 255), /, font: FontType = None, antialias: bool = True, screen=None):
+    def __init__(
+        self,
+        p1,
+        p2,
+        text: str,
+        text_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+        /,
+        font: FontType = None,
+        antialias: bool = True,
+        screen=None,
+    ):
+        """Static Text Box Element"""
+
         super().__init__(p1, p2, screen)
 
         self.text = text
@@ -84,10 +98,14 @@ class TextBox(Box):
         self.aa = antialias
         self.font = font if font else GlobalSetting.font
 
-        assert self.font is not None, "You must set global font or provide font argument."
+        assert (
+            self.font is not None
+        ), "You must set global font or provide font argument."
 
         self._render_txt: Callable[[], SurfaceType]
-        self._render_txt = partial(self.font.render, self.text, self.aa, self.text_color)
+        self._render_txt = partial(
+            self.font.render, self.text, self.aa, self.text_color
+        )
 
     def draw(self):
         rect = self._render()

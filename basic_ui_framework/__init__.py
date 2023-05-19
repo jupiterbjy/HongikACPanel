@@ -6,6 +6,7 @@ Almost like non-standard usage lead to reinventing everything.
 
 
 from .primitives import *
+from .combined import *
 from .ui_manager import *
 from .global_settings import ui_framework_init
 
