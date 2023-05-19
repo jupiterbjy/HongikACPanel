@@ -27,7 +27,7 @@ def bake_ui():
             (10, 80), (70, 140), "▼", color=(0, 0, 255, 255), font=symbol_font
         ),
         "Power": TextButton(
-            (10, 250), (70, 310), "⚡", color=(50, 0, 0, 255), font=symbol_font
+            (10, 250), (70, 310), "⚡", color=(100, 100, 100, 255), font=symbol_font
         ),
         "Temp target": TextBox(
             (220, 10),
@@ -61,15 +61,35 @@ def bake_ui():
 
 
 async def main():
+    # init framebuffer
     framebuffer_init()
     fb_d = FramebufferDriver()
+    fb_d.show_splash()
     fb_d.update_sync()
 
+    # init touch driver
     touch_d = TouchDriver("LCD35", "event0")
 
+    # init ui framework
     ui_framework_init(fb_d.screen)
     ui = bake_ui()
 
+    # Power toggle example
+    sample_flag = True
+
+    async def demo_action(*_):
+        nonlocal sample_flag
+
+        if sample_flag:
+            ui["Power"].set_color(0, 255, 0, 255)
+        else:
+            ui["Power"].set_color(100, 100, 100, 255)
+
+        sample_flag = not sample_flag
+
+    ui["Power"].on_click = demo_action
+
+    # Startup tasks
     async with trio.open_nursery() as nursery:
         # load loops
         nursery.start_soon(ui.poll_touch, touch_d)

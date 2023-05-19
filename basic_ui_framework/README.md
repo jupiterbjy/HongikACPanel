@@ -16,4 +16,4 @@ And you're free to add what you want
 
 Has some issue with display, so color is kinda mess
 
-![](ui_demo.jpg)
+![](ui_demo.webp)
