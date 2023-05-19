@@ -223,7 +223,7 @@ class ACManager:
         self._pw = password
 
         # AC states to keep track of
-        self.state: Union[ACState, None] = None
+        self.state: ACState | None = None
         self.target_temp = (self.upper_bound + self.lower_bound) // 2
         self.is_powered = False
         self.action = "other"

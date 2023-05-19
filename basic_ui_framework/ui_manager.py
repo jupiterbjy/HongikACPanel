@@ -46,7 +46,7 @@ class UIManager:
         for name, ui_element in self.button_type.items():
             if coordinate in ui_element:
                 logger.debug("Element {} click at {}", name, coordinate)
-                await ui_element.on_click(coordinate)
+                await ui_element.on_click(ui_element, coordinate)
                 return True
 
         return False

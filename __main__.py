@@ -32,7 +32,7 @@ async def main(args):
         # load loops
         nursery.start_soon(ac_mgr.keep_alive_power)
         # nursery.start_soon(task_manager.run_executor)
-        nursery.start_soon(app.poll_touch)
+        nursery.start_soon(app.ui.poll_touch)
         nursery.start_soon(app.update_temp_loop)
 
         logger.debug("Startup complete")

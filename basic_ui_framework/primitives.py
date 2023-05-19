@@ -72,8 +72,10 @@ class Box:
 
 
 class ButtonMixin:
-    async def on_click(self: Box, coordinate: Tuple[int, int]):
-        """Action upon click. touch coordinate is given as argument."""
+    async def on_click(self: Box, ui_element: Box, coordinate: Tuple[int, int]):
+        """Action upon click. touch coordinate is given as argument.
+        self and ui_element should be same thing.
+        This is to let function shadowing this method access the ui element."""
 
         pass
 
