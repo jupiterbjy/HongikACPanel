@@ -58,6 +58,7 @@ class Box:
         """Sets color."""
 
         self.color = r, g, b, a
+        self._render = partial(self.screen.fill, self.color, self.pos_full)
 
     def draw(self) -> Rect:
         """Draws UI. Returns drawn area"""
@@ -103,6 +104,14 @@ class TextBox(Box):
         ), "You must set global font or provide font argument."
 
         self._render_txt: Callable[[], SurfaceType]
+        self._render_txt = partial(
+            self.font.render, self.text, self.aa, self.text_color
+        )
+
+    def set_text_color(self, r, g, b, a=255):
+        """Sets color."""
+
+        self.text_color = r, g, b, a
         self._render_txt = partial(
             self.font.render, self.text, self.aa, self.text_color
         )
