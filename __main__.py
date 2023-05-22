@@ -2,6 +2,7 @@
 UI with some logging settings
 """
 
+import pathlib
 from argparse import ArgumentParser
 
 import trio
@@ -17,10 +18,11 @@ from app import ACApp
 # TODO: add loguru settings
 
 async def main(args):
-    ac_mgr = ACManager(args.ip, args.id, args.pw)
     # task_manager = AsyncTaskManager()
+    fb_driver = FramebufferDriver(args.buffer)
 
-    fb_driver = FramebufferDriver(fb=args.buffer)
+    ac_mgr = ACManager(args.ip, args.id, args.pw)
+
     touch_driver = TouchDriver("LCD35", "event0")
 
     app = ACApp(ac_mgr, touch_driver, fb_driver)
@@ -30,7 +32,7 @@ async def main(args):
 
     async with trio.open_nursery() as nursery:
         # load loops
-        nursery.start_soon(ac_mgr.keep_alive_power)
+        # nursery.start_soon(ac_mgr.keep_alive_power)
         # nursery.start_soon(task_manager.run_executor)
         nursery.start_soon(app.ui.poll_touch)
         nursery.start_soon(app.update_temp_loop)
@@ -45,7 +47,7 @@ if __name__ == "__main__":
     parser.add_argument("id", type=str, help="Web remote controller id")
     parser.add_argument("pw", type=str, help="Web remote controller password")
     parser.add_argument(
-        "-b", "--buffer", type=str, default=None, help="Web remote controller password"
+        "-b", "--buffer", type=pathlib.Path, default=None, help="Web remote controller password"
     )
     parser.add_argument("-t", "--temp", type=int, default=26, help="Target temperature")
 
