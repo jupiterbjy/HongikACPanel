@@ -18,17 +18,26 @@ from app import ACApp
 # TODO: add loguru settings
 
 async def main(args):
-    # task_manager = AsyncTaskManager()
 
     # check buffer param
     buffer = pathlib.Path(args.buffer) if args.buffer else None
-    fb_driver = FramebufferDriver(buffer)
+
+    # task_manager = AsyncTaskManager()
+    framebuffer_init()
+    fb_d = FramebufferDriver(buffer)
+    fb_d.show_splash()
+    fb_d.update_sync()
+
+    # init touch driver
+    touch_d = TouchDriver("LCD35", "event0")
+
+    # init ui framework
+    ui_framework_init(fb_d.screen)
 
     ac_mgr = ACManager(args.ip, args.id, args.pw)
-
     touch_driver = TouchDriver("LCD35", "event0")
 
-    app = ACApp(ac_mgr, touch_driver, fb_driver)
+    app = ACApp(ac_mgr, touch_driver, fb_d)
 
     # init app
     await app.init()
