@@ -19,7 +19,10 @@ from app import ACApp
 
 async def main(args):
     # task_manager = AsyncTaskManager()
-    fb_driver = FramebufferDriver(args.buffer)
+
+    # check buffer param
+    buffer = pathlib.Path(args.buffer) if args.buffer else None
+    fb_driver = FramebufferDriver(buffer)
 
     ac_mgr = ACManager(args.ip, args.id, args.pw)
 
@@ -47,7 +50,7 @@ if __name__ == "__main__":
     parser.add_argument("id", type=str, help="Web remote controller id")
     parser.add_argument("pw", type=str, help="Web remote controller password")
     parser.add_argument(
-        "-b", "--buffer", type=pathlib.Path, default=None, help="Web remote controller password"
+        "-b", "--buffer", type=str, default="", help="Web remote controller password"
     )
     parser.add_argument("-t", "--temp", type=int, default=26, help="Target temperature")
 
