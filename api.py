@@ -1,9 +1,8 @@
 """
 Experimental AC control code
-Some a bit of improved code to discard need of Seleinum and chrome/firefox driver
+Some a bit of improved code to discard need of Selenium and chrome/firefox driver
 
-Python 3.9
-2022-09-08 / 2023-03-09
+Python 3.8
 jupiterbjy@gmail.com
 
 References:
@@ -15,7 +14,7 @@ import re
 import functools
 import argparse
 from random import randint
-from typing import Dict, Any
+from typing import Dict, Any, Union
 
 import trio
 import httpx
@@ -128,14 +127,14 @@ class ACState:
 
     @functools.cached_property
     def wind_speed(self) -> str:
-        """Determines operation mode"""
+        """Determines wind speed mode"""
 
         img_src = self.soup.find("img", {"id": "Image_4"})["src"]
         return WIND_SPEED_MODE[self._pattern_match(img_src)]
 
     @functools.cached_property
     def wind_angle(self) -> str:
-        """Determines operation mode"""
+        """Determines wind angle mode"""
 
         img_src = self.soup.find("img", {"id": "Image_5"})["src"]
         return WIND_DIRECTION_MODE[self._pattern_match(img_src)]
@@ -163,10 +162,10 @@ class ACManager:
     7 = 0
     8 = 1 | 0: Mode change perm, else: No perm (No UI control avail.) -> to hdnNo_8
 
-    10 = 1
-    11 = 1
+    10 = 2 | 0: Wind Speed Auto, 1: High, 2: Mid, 3: Low
+    11 = 1 | 0: Wind Angle Swing, 1: Horizontal, 2: Vertical
     12 = 29 AC upper temp lim, must be < 29
-    13 = 25 AC lower temp lim, must be > 25
+    13 = 25 AC lower temp lim, must be >= 25
     14 = 1
     15 = 1
     16 = 1
@@ -198,7 +197,7 @@ class ACManager:
         "hdnNo_6": 0,
         "hdnNo_7": 0,
         "hdnNo_8": 1,
-        "hdnNo_10": 1,
+        "hdnNo_10": 2,
         "hdnNo_11": 1,
         "hdnNo_12": 29,
         "hdnNo_13": 25,
@@ -213,7 +212,7 @@ class ACManager:
         "btnSubmit.y": 16,
     }
 
-    def __init__(self, ip, id_, password):
+    def __init__(self, ip: str, id_: str, password: str, temp: int, angle: int, speed: int):
         self.client = httpx.AsyncClient()
 
         self._url = f"http://{ip}/"
@@ -222,9 +221,19 @@ class ACManager:
         self._id = id_
         self._pw = password
 
+        self.angle = angle
+        self.speed = speed
+        self.target_temp = temp
+
+        # overrides class's
+        self.base_state = {k: v for k, v in self.base_state.items()}
+        self.base_state["hdnNo_4"] = temp
+        self.base_state["hdnNo_10"] = speed
+        self.base_state["hdnNo_11"] = angle
+
         # AC states to keep track of
-        self.state: ACState | None = None
-        self.target_temp = (self.upper_bound + self.lower_bound) // 2
+        self.state: Union[ACState, None] = None
+
         self.is_powered = False
         self.action = "other"
 
@@ -249,8 +258,9 @@ class ACManager:
         payload["hdnNo_1"] = 1 if self.is_powered else 0
 
         payload["btnSubmit.x"], payload["btnSubmit.y"] = self.btn_action[self.action]
+        payload.update(self.state.states)
 
-        return self.state.states | payload
+        return payload
 
     async def login(self):
         """
@@ -425,14 +435,14 @@ class ACManager:
             self.action = "other"
 
 
-async def main(arguments):
-    logger.info("Note: This script will automatically stop AC when shutting down.")
+async def main(args_):
+    logger.info("Note: This script will automatically stop AC when shutting down by SIGINT")
 
-    ac = ACManager(arguments.ip, arguments.id, arguments.pwd)
+    ac = ACManager(args_.ip, args_.id, args_.pwd, args_.temp, args_.wind_angle, args_.wind_speed)
 
     await ac.login()
     await ac.power_on()
-    await ac.set_temp(arguments.temp)
+    await ac.set_temp(args_.temp)
 
     async with trio.open_nursery() as nursery:
         nursery.start_soon(ac.keep_alive_power)
@@ -443,7 +453,7 @@ async def main(arguments):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser("Controls AC")
+    parser = argparse.ArgumentParser("CLI AC keepalive")
     parser.add_argument(
         "ip",
         type=str,
@@ -454,21 +464,40 @@ if __name__ == '__main__':
         "--temp",
         type=int,
         default=26,
-        help="Target temperature."
+        help="Target temp (25 ~ 28)"
     )
+
+    # WIND_DIRECTION_MODE = ["Swing", "Horizontal", "Vertical"]
+    parser.add_argument(
+        "-a",
+        "--wind-angle",
+        type=int,
+        default=0,
+        help="Target Wind Angle (0 Swing / 1 Horizontal / 2 Vertical)"
+    )
+
+    # WIND_SPEED_MODE = ["Auto", "Max", "medium", "low"]
+    parser.add_argument(
+        "-s",
+        "--wind-speed",
+        type=int,
+        default=0,
+        help="Target Wind Speed (0 Auto / 1 High / 2 Mid / 3 Low)"
+    )
+
     parser.add_argument(
         "-i",
         "--id",
         type=str,
         required=True,
-        help="ID for login."
+        help="Login ID"
     )
     parser.add_argument(
         "-p",
         "--pwd",
         type=str,
         required=True,
-        help="Password for login."
+        help="Login PW"
     )
 
     args = parser.parse_args()
