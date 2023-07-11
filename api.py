@@ -212,7 +212,7 @@ class ACManager:
         "btnSubmit.y": 16,
     }
 
-    def __init__(self, ip: str, id_: str, password: str, temp: int, angle: int, speed: int):
+    def __init__(self, ip: str, id_: str, password: str, temp=26, angle=0, speed=0):
         self.client = httpx.AsyncClient()
 
         self._url = f"http://{ip}/"
