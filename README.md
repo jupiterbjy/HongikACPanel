@@ -4,6 +4,8 @@ Because they didn't give us the darn remote controller.
 
 *TODO: Put Demo image here*
 
+If you don't need UI - Just download and run `api.py` only.
+
 ## Introduction
 
 Project to create Rapsberry Pi powered AC wallpad.
