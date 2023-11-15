@@ -58,8 +58,9 @@ Even more about the GUI where it's role ends immediately after typing in AC PW, 
 
 To mitigate this, I reverse-engineered their API by looking at `HTML` + `js` code and made my own script that takes command line arguments instead.
 
-![](readme_res/fig0.jpg)
-(Forgot who was the author of this image, lemme know!)
+![](readme_res/fig0.jpg)  
+(Yup, that wasn't my PC, would rater take photo rather than sending screenshot!)  
+(Forgot who draw this great fanart, lemme know!)
 
 works well, just open up script shortcut and bam, it does it's job.
 
