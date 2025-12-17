@@ -1,12 +1,16 @@
 # Hongik Air Conditioner Wall Panel Project
 
+[basic_ui_framework readme](basic_ui_framework)  
+[framebuffer_driver readme](framebuffer_driver)  
+[touch_driver readme](touch_driver)
+
 Because they didn't give us the darn remote controller.
 
 (Yup, that wasn't my PC, would take photo rather than sending screenshot from that unsafe pc!)  
 (and there's no image of it in actual run as wallpad either sadly but temp do show up fine)
 
 | ![](readme_res/fig0.jpg) | ![](basic_ui_framework/ui_demo.webp) |
-|-|-|
+|--------------------------|--------------------------------------|
 
 If you don't need UI - Just download and run `api.py` only.
 
@@ -20,7 +24,9 @@ Probably useless to 99.9% of people who arent in Hong-ik university, including m
 
 git clone this and run `__main__.py`. Pretty sure this won't work right now, will need to test-run at university next week.
 
-Check [this post](https://forums.raspberrypi.com/viewtopic.php?t=238060) if you have trouble setting up SPI display.
+Check [issue I opened](https://github.com/goodtft/LCD-show/issues/337)
+and [this post](https://forums.raspberrypi.com/viewtopic.php?t=238060)
+if you have trouble setting up SPI display.
 
 ## Requirements
 
