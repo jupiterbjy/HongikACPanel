@@ -2,7 +2,11 @@
 
 Because they didn't give us the darn remote controller.
 
-*TODO: Put Demo image here*
+(Yup, that wasn't my PC, would take photo rather than sending screenshot from that unsafe pc!)  
+(and there's no image of it in actual run as wallpad either sadly but temp do show up fine)
+
+| ![](readme_res/fig0.jpg) | ![](basic_ui_framework/ui_demo.webp) |
+|-|-|
 
 If you don't need UI - Just download and run `api.py` only.
 
@@ -58,11 +62,7 @@ Even more about the GUI where it's role ends immediately after typing in AC PW, 
 
 To mitigate this, I reverse-engineered their API by looking at `HTML` + `js` code and made my own script that takes command line arguments instead.
 
-![](readme_res/fig0.jpg)  
-(Yup, that wasn't my PC, would rater take photo rather than sending screenshot!)  
-(Forgot who draw this great fanart, lemme know!)
-
-works well, just open up script shortcut and bam, it does it's job.
+TL;DR it worked well, just open up script shortcut and bam, it does it's job.
 
 Spent months after months like that, and now with old RPi 1B+ nowhere to use - I decided to make this into a AC wall pad.
 
